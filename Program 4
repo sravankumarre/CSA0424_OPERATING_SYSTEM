@@ -1,0 +1,55 @@
+loc)  1.47 KB
+#include <stdio.h>
+
+#define MAX_PARTITIONS 10
+#define MAX_PROCESSES 10
+
+struct Partition {
+    int size;
+    int allocated;
+};
+
+struct Process {
+    int size;
+    int allocated;
+};
+
+int main() {
+    struct Partition partitions[MAX_PARTITIONS];
+    struct Process processes[MAX_PROCESSES];
+    int num_partitions, num_processes;
+
+    printf("Enter number of memory partitions: ");
+    scanf("%d", &num_partitions);
+    printf("Enter sizes of memory partitions:\n");
+    for (int i = 0; i < num_partitions; i++) {
+        printf("Partition %d: ", i+1);
+        scanf("%d", &partitions[i].size);
+        partitions[i].allocated = 0;
+    }
+
+    printf("Enter number of processes: ");
+    scanf("%d", &num_processes);
+    printf("Enter sizes of processes:\n");
+    for (int i = 0; i < num_processes; i++) {
+        printf("Process %d: ", i+1);
+        scanf("%d", &processes[i].size);
+        processes[i].allocated = 0;
+    }
+
+    for (int i = 0; i < num_processes; i++) {
+        for (int j = 0; j < num_partitions; j++) {
+            if (!partitions[j].allocated && partitions[j].size >= processes[i].size) {
+                partitions[j].allocated = 1;
+                partitions[j].size -= processes[i].size;
+                processes[i].allocated = 1;
+                printf("Process %d allocated to partition %d\n", i+1, j+1);
+                break;
+            }
+        }
+        if (!processes[i].allocated) {
+            printf("Process %d cannot be allocated\n", i+1);
+        }
+    }
+
+    return 0;

@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_PAGE_FRAMES 10
+
+int page_frames[MAX_PAGE_FRAMES];
+int num_page_frames;
+
+bool page_exists(int page) {
+    for (int i = 0; i < num_page_frames; i++) {
+        if (page_frames[i] == page) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void insert_page(int page) {
+    for (int i = num_page_frames - 1; i >= 1; i--) {
+        page_frames[i] = page_frames[i-1];
+    }
+    page_frames[0] = page;
+}
+
+void print_page_frames() {
+    for (int i = 0; i < num_page_frames; i++) {
+        printf("%d ", page_frames[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int page_reference_sequence[] = {4, 1, 2, 4, 3, 2, 1, 5};
+    int num_page_references = sizeof(page_reference_sequence) / sizeof(int);
+    int page_faults = 0;
+
+    printf("Page reference sequence: ");
+    for (int i = 0; i < num_page_references; i++) {
+        printf("%d ", page_reference_sequence[i]);
+    }
+    printf("\n");
+
+    printf("Number of page frames: ");
+    scanf("%d", &num_page_frames);
+
+    printf("Page frames: ");
+    for (int i = 0; i < num_page_frames; i++) {
+        page_frames[i] = -1;
+        printf("%d ", page_frames[i]);
+    }
+    printf("\n");
+
+    for (int i = 0; i < num_page_references; i++) {
+        int page = page_reference_sequence[i];
+        if (!page_exists(page)) {
+            printf("Page fault for page %d\n", page);
+            page_faults++;
+            insert_page(page);
+        } else {
+            printf("Page hit for page %d\n", page);
+        }
+        printf("Current page frames: ");
+        print_page_frames();
+    }
+
+    printf("Total number of page faults: %d\n", page_faults);
+    return 0;
+}
+
+
+
+def SJF(processes, burst_times):
+    n = len(processes)
+    waiting_times = [0] * n
+    turnaround_times = [0] * n
+    
+    process_order = sorted(range(n), key=lambda k: burst_times[k])
+    
+    for i in range(n):
+        process_index = process_order[i]
+        if i == 0:
+            waiting_times[process_index] = 0
+        else:
+            waiting_times[process_index] = sum(burst_times[process_order[0:i]])
+        turnaround_times[process_index] = waiting_times[process_index] + burst_times[process_index]
+    
+    avg_waiting_time = sum(waiting_times) / n
+    avg_turnaround_time = sum(turnaround_times) / n
+    
+    return (avg_waiting_time, avg_turnaround_time)
+
+processes = ['P1', 'P2', 'P3', 'P4']
+burst_times = [6, 8, 7, 3]
+
+avg_waiting_time, avg_turnaround_time = SJF(processes, burst_times)
+
+print("Average waiting time:", avg_waiting_time)
+print("Average turnaround time:", avg_turnaround_time

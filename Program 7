@@ -1,0 +1,47 @@
+#include <stdio.h>
+#define MAX_PAGES 20
+
+int main() {
+    int pages[MAX_PAGES], frames[MAX_PAGES], faults = 0, n, m, i, j, k, lru;
+
+    printf("Enter the number of pages: ");
+    scanf("%d", &n);
+
+    printf("Enter the page reference sequence: ");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    printf("Enter the number of page frames: ");
+    scanf("%d", &m);
+
+    for (i = 0; i < m; i++) {
+        frames[i] = -1; // initialize frames to -1
+    }
+
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < m; j++) {
+            if (frames[j] == pages[i]) {
+                break;
+            }
+        }
+        if (j == m) { // page fault
+            faults++;
+            lru = 0;
+            for (k = 1; k < m; k++) {
+                if (frames[k] == -1) {
+                    lru = k;
+                    break;
+                }
+                if (frames[k] < frames[lru]) {
+                    lru = k;
+                }
+            }
+            frames[lru] = pages[i];
+        }
+    }
+
+    printf("Number of page faults: %d\n", faults);
+
+    return 0;
+}

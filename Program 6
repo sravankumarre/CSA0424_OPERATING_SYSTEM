@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define P 3 
+#define R 3 
+int main() {
+    int allocation[P][R] = {{3, 3, 3}, {2, 0, 3}, {1, 2, 4}};
+    int max[P][R] = {{3, 6, 8}, {4, 3, 3}, {3, 4, 4}};
+    int need[P][R], available[R] = {1, 2, 0};
+    bool finish[P] = {false};
+    int deadlock[P], count = 0;
+    
+    for (int i = 0; i < P; i++) {
+        for (int j = 0; j < R; j++) {
+            need[i][j] = max[i][j] - allocation[i][j];
+        }
+    }
+
+    bool flag;
+    do {
+        flag = false;
+        for (int i = 0; i < P; i++) {
+            if (!finish[i]) {
+                bool safe = true;
+                for (int j = 0; j < R; j++) {
+                    if (need[i][j] > available[j]) {
+                        safe = false;
+                        break;
+                    }
+                }
+                if (safe) {
+                    finish[i] = true;
+                    flag = true;
+                    for (int j = 0; j < R; j++) {
+                        available[j] += allocation[i][j];
+                    }
+                }
+            }
+        }
+    } while (flag);
+
+    for (int i = 0; i < P; i++) {
+        if (!finish[i]) {
+            deadlock[count++] = i;
+        }
+    }
+
+    if (count > 0) {
+        printf("The system is in a deadlock state. Deadlocked processes: ");
+        for (int i = 0; i < count; i++) {
+            printf("P%d ", deadlock[i] + 1);
+        }
+        printf("\n");
+    } else {
+        printf("The system is not in a deadlock state.\n");
+    }
+
+    return 0;
+}
